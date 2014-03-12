@@ -1,5 +1,4 @@
 CFLAGS= -Wall
+CXXFLAGS = -m32 -Wall -W -O2 -fno-operator-names
 
-all: manual-jit
-
-manual-jit: manual-jit.o
+all: manual-jit xbyak-jit
