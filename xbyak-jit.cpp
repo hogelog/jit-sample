@@ -1,12 +1,14 @@
 #include <stdio.h>
 #include <xbyak/xbyak.h>
 
-const void* jit_compile(Xbyak::CodeGenerator &gen, const char *source) {
+typedef int (*JIT_FUNCTION)();
+
+JIT_FUNCTION jit_compile(Xbyak::CodeGenerator &gen, const char *source) {
   int ch;
 
   gen.mov(gen.eax, 0);
 
-  while ((ch = *source++) != EOF) {
+  while ((ch = *source++) != '\0') {
     switch (ch) {
       case '+':
         gen.inc(gen.eax);
@@ -19,12 +21,12 @@ const void* jit_compile(Xbyak::CodeGenerator &gen, const char *source) {
 
   gen.ret();
 
-  return gen.getCode();
+  return (JIT_FUNCTION) gen.getCode();
 }
 
 int main() {
   Xbyak::CodeGenerator gen(20000);
-  int (*codes)() = (int (*)())jit_compile(gen, "++++++++---++");
+  const JIT_FUNCTION codes = jit_compile(gen, "++++++++---++");
   printf("result: %d\n", codes());
   return 0;
 }
